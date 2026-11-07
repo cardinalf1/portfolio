@@ -1,0 +1,7 @@
+# built by GitHub Actions (python3 build.py), not committed
+dist/
+tools/shots/
+__pycache__/
+# leftovers from the original download
+raghav-portfolio.zip
+/index.html
