@@ -18,12 +18,12 @@
   if(reduce)return;
 
   var endT2=false;HOOKS.push(function(){var e=T>=total-50;if(e!==endT2&&!document.hidden){endT2=e;document.title=e?'Thanks for scrolling.':TITLE}});
-  var slate=$('#slate'),slN=$('#slN'),slL=$('#slL'),lt=$('#lt'),ltB=$('b',lt),ltL=$('i',lt),ltS=$('span',lt),toastEl=$('#toast'),keys=$('#keys'),pb=$('#hPlay'),stEl=$('#hSt');
+  var slate=$('#slate'),slN=$('#slN'),slL=$('#slL'),lt=$('#lt'),ltB=$('b',lt),ltL=$('i',lt),ltS=$('span',lt),toastEl=$('#toast'),keys=$('#keys'),stEl=$('#hSt');
 
   /* opening slate */
-  slN.textContent='Runtime '+tc(total).slice(0,5);
+  slN.textContent='Runtime '+tc(RUNTIME).slice(0,5);
   var hr=new Date().getHours();
-  if(hr<5)slL.textContent='It is late. This takes about four minutes.';
+  if(hr<5)slL.textContent='It is late. This takes about three minutes.';
 
   /* chapter cards, in the bottom margin like a lower third */
   /* chapters now get full title cards in the film, so the lower third is off */
@@ -44,7 +44,7 @@
   var lastIn=performance.now(),idleOn=false,IDL=['!STILL THERE?','!HELLO?','!SCROLL. PLEASE.','!WE GET PAID PER SCROLL','!(WE DO NOT GET PAID)','!FINE. I WILL WAIT.'];
   ['wheel','pointerdown','keydown','touchstart','scroll'].forEach(function(n){addEventListener(n,function(){lastIn=performance.now();if(idleOn){idleOn=false;var a=AGS[5];if(a.ovr&&a.ovr.idle)a.ovr.u=performance.now()}},{passive:true})});
   HOOKS.push(function(dt,now){
-    if(!started||PLAY.on||idleOn||now-lastIn<9000||T>=total-50||(LIM&&!LIM.open&&T>=LIM.gate-5)||SWARM.u>now)return;
+    if(!started||idleOn||now-lastIn<9000||T>=total-50||(LIM&&!LIM.open&&T>=LIM.gate-5)||SWARM.u>now)return;
     idleOn=true;var t0=now;window.__ach&&__ach('idle');
     AGS[5].ovr={idle:1,fn:function(){var n2=performance.now(),k=Math.min(1,(n2-t0)/900);return{x:innerWidth*(1.05-.2*k)+Math.sin(n2*.0011)*30,y:innerHeight*.14+Math.cos(n2*.0013)*14}},on:function(){return true},
       sg:{get label(){return IDL[Math.min(IDL.length-1,Math.floor((performance.now()-t0)/2200))]},clicks:[],grab:false,shape:null,frame:null}};
@@ -52,11 +52,6 @@
   /* go to a time in the film, smoothly */
   function shotStart(id){var b=beatAt(id);return b?b.start+2600:0}
 
-  /* play / pause */
-  function togglePlay(){if(!started)return;setPlay(!PLAY.on);toast(PLAY.on?'Playing. Scroll to take over.':'Paused.',1100)}
-  pb.addEventListener('click',togglePlay);
-  pb.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();e.stopPropagation();togglePlay()}});
-  ['wheel','touchstart'].forEach(function(n){addEventListener(n,function(){if(PLAY.on)setPlay(false)},{passive:true})});
 
   /* keyboard help */
   var kAn=null;
@@ -80,7 +75,7 @@
   }
   var WORDS={
     sudo:function(){toast('Permission denied. Nice try.')},
-    hire:function(){toast('Rolling to contact.');setPlay(false);goTo(shotStart('contact'),2.6)},
+    hire:function(){toast('Rolling to contact.');goTo(shotStart('contact'),2.6)},
     opus:function(){toast('At your service. Within usage limits.')}
   };
   addEventListener('keydown',function(e){
@@ -89,8 +84,6 @@
     var k=e.key;
     if(k==='?'){e.preventDefault();showKeys(!keys.classList.contains('on'));return}
     if(k==='Escape'){showKeys(false);return}
-    if((k==='k'||k==='K')&&tg!=='BUTTON'){e.preventDefault();togglePlay();return}
-    if(PLAY.on&&k!=='Shift')setPlay(false);
     var kk=k.length===1?k.toLowerCase():k;
     kon=kk===KON[kon]?kon+1:(kk===KON[0]?1:0);
     if(kon===KON.length){kon=0;swarm('mouse',8000,AGS.map(function(a,i){return i?'!0'+(i+1):'!FOLLOWING YOU'}));toast('Swarm mode. They like you.');window.__ach&&__ach('konami')}
@@ -116,12 +109,12 @@
   addEventListener('touchend',function(e){var t=e.changedTouches[0];if(t&&t.clientY<ty0-30)endPush()},{passive:true});
   addEventListener('keydown',function(e){if(e.key==='PageDown'||e.key==='ArrowDown'||e.key==='End'||(e.key===' '&&!e.shiftKey))endPush()});
 
-  /* deep link: #t=SECONDS starts the film there */
+  /* deep link: #t=SECONDS starts the film there, in the same seconds the counter shows */
   var deep=/(?:^#|&)t=(\d+(?:\.\d+)?)/.exec(location.hash),deepDone=!deep;
 
   var spS=0,stTxt='';
   HOOKS.push(function(dt,now,dT){
-    if(!deepDone&&started){deepDone=true;introCur=INTRO;var dm=clamp(+deep[1]*1000,0,total),y=Math.max(0,(dm-INTRO)/1000*PPS);if(lenis)lenis.scrollTo(y,{immediate:true,force:true});else window.scrollTo(0,y);T=Math.min(dm,LIM&&!LIM.open?LIM.gate:total);lastT=T;TV=0;dT=0}
+    if(!deepDone&&started){deepDone=true;introCur=INTRO;var dm=clamp(+deep[1]*1000*total/RUNTIME,0,total),y=Math.max(0,(dm-INTRO)/1000*PPS);if(lenis)lenis.scrollTo(y,{immediate:true,force:true});else window.scrollTo(0,y);T=Math.min(dm,LIM&&!LIM.open?LIM.gate:total);lastT=T;TV=0;dT=0}
     /* slate: holds while the page loads, then fades as the film starts */
     var so=!started?1:1-clamp((T-350)/550,0,1);
     if(so<=0){if(slate.style.display!=='none')slate.style.display='none'}
@@ -133,13 +126,12 @@
     var lo=c?eo(a)*(1-b):0;
     lt.style.opacity=lo.toFixed(3);
     if(c){ltL.style.transform='scaleX('+eo(a).toFixed(3)+')';ltS.style.clipPath='inset(0 '+((1-eo(a))*100).toFixed(1)+'% 0 0)'}
-    /* transport status: PLAY, or REW / FF with the speed, like a tape deck */
+    /* transport status: REW / FF with the speed, like a tape deck */
     spS+=(dT/Math.max(dt,.001)-spS)*(1-Math.exp(-dt*6));
     var s='';
     if(spS<-1900)s='REW '+Math.max(2,Math.round(-spS/1000))+'X';
     else if(spS>2600)s='FF '+Math.round(spS/1000)+'X'+(spS>7000?' // SLOW DOWN':'');
     if(spS<-6000)s+=' // ACT NATURAL';
-    else if(PLAY.on)s='PLAY';
     if(s!==stTxt){stTxt=s;if(s)stEl.textContent=s;stEl.classList.toggle('on',!!s)}
   });
 })();

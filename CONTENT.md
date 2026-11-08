@@ -16,7 +16,7 @@ Shown every time the page opens (skipped for `#t=` links, `?film`, `?plain` and 
 
 - `RAGHAV BAHADUR // PORTFOLIO // 2026`
 - Headline: `How do you want this?`
-- `[ COOL RESUME ]` with `Highly recommended. A four minute film. Six cursors build it in front of you. Scroll to play, scroll up to rewind.` A cursor hovers next to it tagged `PICK THIS ONE`. It starts the film.
+- `[ COOL RESUME ]` with `Highly recommended. A three minute film. Six cursors build it in front of you. Scroll to play, scroll up to rewind.` A cursor hovers next to it tagged `PICK THIS ONE`. It starts the film.
 - `[ I HAVE 30 SECONDS ]` with `The short version. One screen, every fact, my email.` It opens the 30 second page.
 - `[ NORMAL RESUME ]` with `A document. Very professional. Very still.` It plays hard to get: it runs away as `[ NOPE ]`, then `[ ARE YOU SURE? ]`, then back to `[ NORMAL RESUME ]`, the interns chase and pin it like the first slide's button (same lines), and clicking it while pinned opens the resume, then: `Opened in a new tab. The cool one is still here.`
 - Footer: `Enter picks the cool one. Escape too, honestly.`
@@ -25,9 +25,9 @@ Shown every time the page opens (skipped for `#t=` links, `?film`, `?plain` and 
 
 - Browser tab title: `Raghav Bahadur`
 - Search description: `Portfolio of Raghav Bahadur, a student in Bengaluru who builds software, designs hardware and makes tools for the Cardinal STEM Racing team.` (`src/head.html`)
-- Top bar, left: `RAGHAV BAHADUR`. Middle: the chapter name (`Intro`, `In numbers`, `Why me`, `Personal builds`, `Cardinal`, `Process`, `About`, `Work with me`, `Contact`, `Credits`). Right: a play button, then the timecode in film frames (24 per second) like `01:15:12 / 01:54:09`. While scrubbing fast a status appears before the button: `FF 3X`, `REW 2X`, or `PLAY` during autoplay (search `transport status` in `src/js/40-extras.js`).
-- Scroll hint at the start: `SCROLL`, with `or press K to play` under it on devices with a keyboard (`src/body.html`)
-- Opening slate while the page loads: `RAGHAV BAHADUR` and `Runtime 03:46` (the runtime is counted). Between midnight and 5 am it adds `It is late. This takes about four minutes.` (`src/body.html` and `src/js/40-extras.js`)
+- Top bar, left: `RAGHAV BAHADUR`. Middle: the chapter name (`Intro`, `In numbers`, `Why me`, `Personal builds`, `Cardinal`, `Process`, `About`, `Work with me`, `Contact`, `Credits`). Right: the timecode in frames (24 per second), scaled so it always ends at `03:00:00`, like `01:15:12 / 03:00:00`. While scrubbing fast a status appears before it: `FF 3X` or `REW 2X` (search `transport status` in `src/js/40-extras.js`).
+- Scroll hint at the start: `SCROLL`, with `T for the 30 second version` under it on devices with a keyboard (`src/body.html`)
+- Opening slate while the page loads: `RAGHAV BAHADUR` and `Runtime 03:00`. Between midnight and 5 am it adds `It is late. This takes about three minutes.` (`src/body.html` and `src/js/40-extras.js`)
 - Tab title while the tab is in the background: `Paused. The agents are waiting.` (`src/js/40-extras.js`)
 - Screen reader label of the page: `Raghav Bahadur, portfolio film`
 
@@ -127,8 +127,8 @@ Beat extras: the "Meet the interns" beat has the six cursors tagged `HI`, `HELLO
 
 ## Player controls
 
-- Play button in the top bar and the `K` key: the film plays itself at normal speed. Any scroll or key takes over. Toasts: `Playing. Scroll to take over.` and `Paused.`
-- `?` opens a help panel titled `KEYS.TXT` / `HELP` with: `Scroll` Play forward, scroll up to rewind. `K` Play or pause. `Left / Right` Previous or next beat. `Home` Back to the start. `C` Director's commentary. `M` Sound on or off. `?` Open or close this panel. The panel also lists the achievements. Footer: `Add #t=60 to the address to start at 1:00. A few other things are hidden. Look around.` (`src/body.html`)
+- There is no autoplay. The film only moves when the viewer scrolls. The only part that runs by itself is the opening title.
+- `?` opens a help panel titled `KEYS.TXT` / `HELP` with: `Scroll` Play forward, scroll up to rewind. `Left / Right` Previous or next beat. `Home` Back to the start. `C` Director's commentary. `M` Sound on or off. `?` Open or close this panel. The panel also lists the achievements. Footer: `Add #t=60 to the address to start at 1:00. A few other things are hidden. Look around.` (`src/body.html`)
 - Links can start at a time: add `#t=` and seconds to the address, like `#t=60`.
 
 ## Hidden extras
@@ -199,7 +199,7 @@ Its own page, `30s.html`, next to `index.html` (deploy it alongside). Opened by 
 - `How I work`: `Claude Opus plans and assigns. Free models read datasheets and draft. Every result is checked against the source. I make the final call.`
 - Buttons: `[ COPY EMAIL ]` with the address, `[ WRITE TO ME ]` (opens email), `[ FULL RESUME ]` (opens `SITE.resume`), `[ SAVE AS PDF ]` (print), `[ PLAIN TEXT ]` (the `?plain` page), `[ BACK TO THE FILM ]`. Copying shows `Copied <email>. Talk soon.`
 
-Also: an `EMAIL` button in the top bar copies the address from anywhere in the film (hidden on phones, where the 30 second version has it). The last slide has `[ COPY EMAIL ]`, `[ 30 SECOND VERSION ]`, `[ NORMAL RESUME ]` (opens the resume straight away, no chase), `[ WATCH AGAIN ]`. The top bar has `NORMAL RESUME` too (just `RESUME` on narrow phones). The scroll hint reads `or press K to play // T for the 30 second version`. On narrow phones the `CC` and `SND` buttons are hidden.
+Also: an `EMAIL` button in the top bar copies the address from anywhere in the film (hidden on phones, where the 30 second version has it). The last slide has `[ COPY EMAIL ]`, `[ 30 SECOND VERSION ]`, `[ NORMAL RESUME ]` (opens the resume straight away, no chase), `[ WATCH AGAIN ]`. The top bar has `NORMAL RESUME` too (just `RESUME` on narrow phones). The scroll hint reads `T for the 30 second version`. On narrow phones the `CC` and `SND` buttons are hidden.
 
 ## Top bar extras
 

@@ -27,7 +27,7 @@ Open `CONTENT.md`. Every beat lists its text and the file to edit. Then rebuild.
 - `src/js/20-3d.js` the 3D scenes
 - `src/js/30-director.js` the beats (all on-screen words), element motion, cursor agents, camera, confetti, timing
 - `src/js/50-fun.js` achievements, director's commentary (C) and synthesized sound (M)
-- `src/js/40-extras.js` opening slate, chapter cards, player controls (K, play button, `#t=` links, help panel) and the hidden extras
+- `src/js/40-extras.js` opening slate, chapter cards, player controls (`#t=` links, help panel) and the hidden extras
 - `lib/` third party files, inlined by build: anime (timelines), three (3D), Lenis (smooth scroll), simplex-noise (handheld camera and cursor drift)
 - `tools/capture.py` still frames for review
 - `tools/plain.js` builds the plain text version (`src/plain.html`, `src/llms.txt`) from the content; `build.py` runs it when Node is installed
@@ -39,4 +39,4 @@ Open `CONTENT.md`. Every beat lists its text and the file to edit. Then rebuild.
 
 ## Watch it
 
-Short on time? Press `T` (or `30S` in the top bar) for the 30 second version. Otherwise scroll, or press `K` (or the play button in the top bar) to let it play. `C` turns on the director's commentary, `M` the sound. `?` lists the keys and the achievements. Click the chapter name in the top bar for scene select. Printing gives a plain document version. Add `#t=60` to the address to start at 1:00.
+Short on time? Press `T` (or `30S` in the top bar) for the 30 second version. Otherwise scroll. Nothing moves until you do. `C` turns on the director's commentary, `M` the sound. `?` lists the keys and the achievements. Click the chapter name in the top bar for scene select. Printing gives a plain document version. Add `#t=60` to the address to start at 1:00.

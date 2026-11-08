@@ -190,13 +190,13 @@ function achPanel(){
 
   /* the name in the top bar goes back to the start */
   var nm=document.getElementById('hName');
-  function home(){if(window.__chooser){__chooser()}else{setPlay(false);goTo(0,1.8)}}
+  function home(){if(window.__chooser){__chooser()}else{goTo(0,1.8)}}
   nm.addEventListener('click',home);nm.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();home()}});
 
   /* scene select, like a DVD menu: click (or Tab to and press Enter on) the chapter name in the top bar */
   var sc=document.getElementById('scenes'),list=$('ol',sc),chs=[],sAn=null;
   BEATS.forEach(function(b,k){if(k===0||b.chap!==BEATS[k-1].chap)chs.push(b)});
-  list.innerHTML=chs.map(function(b,i){var n=(i+1<chs.length?chs[i+1].start:total)-b.start;return '<li><button type="button" data-i="'+i+'"><em>'+pad(i+1)+'</em><b>'+esc(b.chap)+'</b><span>'+tc(b.start).slice(0,5)+'</span><i>'+Math.max(1,Math.round(n/1000))+' s</i></button></li>'}).join('');
+  list.innerHTML=chs.map(function(b,i){var n=(i+1<chs.length?chs[i+1].start:total)-b.start;return '<li><button type="button" data-i="'+i+'"><em>'+pad(i+1)+'</em><b>'+esc(b.chap)+'</b><span>'+tc(filmTime(b.start)).slice(0,5)+'</span><i>'+Math.max(1,Math.round(filmTime(n)/1000))+' s</i></button></li>'}).join('');
   var btns=$$('button',list);
   function showScenes(on){
     if(on===sc.classList.contains('on'))return;if(sAn)sAn.pause();
@@ -205,7 +205,7 @@ function achPanel(){
       setTimeout(function(){btns[cur].focus({preventScroll:true})},80);window.__ach&&__ach('scenes')}
     else{sc.setAttribute('aria-hidden','true');sAn=A({targets:sc,opacity:0,duration:200,easing:'linear',complete:function(){sc.classList.remove('on')}})}
   }
-  btns.forEach(function(x,i){x.addEventListener('click',function(){showScenes(false);setPlay(false);var b=chs[i];goTo(b.start+(i?400:0),1.6)})});
+  btns.forEach(function(x,i){x.addEventListener('click',function(){showScenes(false);var b=chs[i];goTo(b.start+(i?400:0),1.6)})});
   var ch=document.getElementById('hCh');ch.addEventListener('click',function(){showScenes(!sc.classList.contains('on'))});
   ch.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();e.stopPropagation();showScenes(!sc.classList.contains('on'))}});
   $('.x',sc).addEventListener('click',function(){showScenes(false)});
@@ -267,7 +267,7 @@ function achPanel(){
     /* the 30 second version lives on its own page now */
     if(on){window.__ach&&__ach('tldr');location.href='30s.html';return}
     if(on===box.classList.contains('on'))return;if(tAn)tAn.pause();
-    if(on){lastFocus=document.activeElement;box.classList.add('on');box.setAttribute('aria-hidden','false');setPlay(false);
+    if(on){lastFocus=document.activeElement;box.classList.add('on');box.setAttribute('aria-hidden','false');
       tAn=A.timeline({easing:'easeOutExpo'}).add({targets:box,opacity:[0,1],duration:320})
         .add({targets:$$('.tl > *, .tr > *, .ta > *',box),opacity:[0,1],translateY:[14,0],delay:A.stagger(28),duration:620},40);
       setTimeout(function(){var b=$('.pri',box);if(b)b.focus({preventScroll:true})},60);window.__ach&&__ach('tldr')}
@@ -297,7 +297,7 @@ function achPanel(){
   /* the last slide's buttons */
   var endB=BEATS.filter(function(b){return b.id==='end'})[0];
   if(endB)endB.el.addEventListener('click',function(e){var b=e.target.closest('[data-end]');if(!b)return;var a=b.getAttribute('data-end');
-    if(a==='copy')copy();else if(a==='tldr')show(true);else if(a==='again'){setPlay(false);goTo(0,2.4)}});
+    if(a==='copy')copy();else if(a==='tldr')show(true);else if(a==='again'){goTo(0,2.4)}});
 })();
 
 /* ===================== buttons that play hard to get (the resume buttons), like the free model button =====================
@@ -405,7 +405,7 @@ function runaway(a,cfg){
   var open=false,picker=AGS[5],ra=null;
   function enter(first){
     open=true;CHOOSING=true;document.documentElement.classList.add('choosing');ch.style.display='';ch.style.opacity=1;
-    if(lenis&&lenis.stop)lenis.stop();setPlay(false);if(ra&&!first)ra.reset();
+    if(lenis&&lenis.stop)lenis.stop();if(ra&&!first)ra.reset();
     picker.ovr={nofl:1,fn:function(){var r=cool.getBoundingClientRect();return{x:r.right+10,y:r.top+r.height*.5-12}},sg:{label:'!PICK THIS ONE',clicks:[],grab:false,shape:null,frame:null},on:function(){return open}};
     A({targets:$$('#choose .k, #choose h1, #choose .opt, #choose .ft'),opacity:[0,1],translateY:[18,0],delay:A.stagger(70,{start:150}),duration:800,easing:'easeOutExpo'});
     setTimeout(function(){try{cool.focus({preventScroll:true})}catch(e){}},400);

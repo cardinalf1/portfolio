@@ -2,10 +2,10 @@
    There are no pages. The film is one stream of "beats". A beat is a small composition of elements.
    Each element enters on its own, holds, and leaves on its own, and the next beat starts arriving
    while the last one is still leaving. Every style here is a pure function of the playhead T. */
-var OUT=650,OVB=0,GAP=180,T=0,total=0,started=false,INTRO=3600,PPS=95,introCur=0,lenis=null,lastT=0;
+var OUT=650,OVB=0,GAP=180,T=0,total=0,started=false,INTRO=3600,PPS=125,introCur=0,lenis=null,lastT=0;
 /* CHOOSING: the start screen is up. HOLD: do not start the film until the viewer picks. READY: fonts are in */
 var CHOOSING=false,HOLD=false,READY=false;function startFilm(){HOLD=false;if(READY)started=true}
-var TV=0,HOOKS=[],SWARM={u:0,t0:0,mode:'',sg:null},PLAY={on:false,y:0},PMX=-999,PMY=-999;
+var TV=0,HOOKS=[],SWARM={u:0,t0:0,mode:'',sg:null},PMX=-999,PMY=-999;
 var NZ=null;try{if(window.SimplexNoise)NZ=new SimplexNoise('raghav')}catch(e){NZ=null}
 var stage=$('#stage'),fadeEl=$('#fade'),hudCh=$('#hCh'),hudTc=$('#hTc'),progI=$('#progI'),trackEl=$('#track'),hintEl=$('#hint'),agLayer=$('#agents');
 function ease(x){return x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2}
@@ -694,6 +694,8 @@ var TR=null;
 var pmx=0,pmy=0,mx=0,my=0;
 addEventListener('pointermove',function(e){PMX=e.clientX;PMY=e.clientY;pmx=(e.clientX/innerWidth-.5)*2;pmy=(e.clientY/innerHeight-.5)*2},{passive:true});
 var lastNow=0,burstS=0;
+/* what the viewer is told: the counter runs from 00:00 to the stated three minutes, whatever the scroll length */
+var RUNTIME=180000;function filmTime(ms){return Math.round(ms*RUNTIME/total)}
 function tc(ms){ms=Math.max(0,ms);var s=Math.floor(ms/1000);return pad(Math.floor(s/60))+':'+pad(s%60)+':'+pad(Math.floor((ms%1000)*.024))}
 function frame(now){
   requestAnimationFrame(frame);
@@ -702,13 +704,7 @@ function frame(now){
   if(started&&!document.hidden)introCur=Math.min(INTRO,introCur+dt*1000);
   var tgt=started?Math.min(total,introCur+Math.max(0,window.scrollY)/PPS*1000):0;
   if(LIM&&!LIM.open){tgt=Math.min(tgt,LIM.gate);if(window.scrollY>LIM.y+2){if(lenis)lenis.scrollTo(LIM.y,{immediate:true,force:true});else window.scrollTo(0,LIM.y)}}
-  if(PLAY.on&&started){
-    var mxS=Math.max(0,document.documentElement.scrollHeight-innerHeight),endY=(total-INTRO)/1000*PPS;
-    PLAY.y=Math.min(PLAY.y+PPS*rdt,mxS);
-    if(lenis)lenis.scrollTo(PLAY.y,{immediate:true,force:true});else window.scrollTo(0,PLAY.y);
-    if(PLAY.y>=endY-1)setPlay(false);
-  }
-  var wN=12,nS=Math.max(1,Math.ceil(dt/.008)),hS=dt/nS;
+  var wN=10,nS=Math.max(1,Math.ceil(dt/.008)),hS=dt/nS;
   for(var si=0;si<nS;si++){TV+=(wN*wN*(tgt-T)-2*wN*TV)*hS;T+=TV*hS}
   if(Math.abs(tgt-T)<.4&&Math.abs(TV)<6){T=tgt;TV=0}
   if(LIM&&!LIM.open&&T>LIM.gate){T=LIM.gate;TV=0}
@@ -747,13 +743,9 @@ function frame(now){
   drawCF(now);
   if(TR)TR(dT,dt,burstS);
   progI.style.transform='scaleX('+(T/total).toFixed(5)+')';
-  hudTc.textContent=tc(T)+' / '+tc(total);
+  hudTc.textContent=tc(filmTime(T))+' / '+tc(RUNTIME);
   var cur=BEATS[0];for(var q3=0;q3<BEATS.length;q3++){if(T>=BEATS[q3].start+300)cur=BEATS[q3]}
   if(hudCh.textContent!==cur.chap)hudCh.textContent=cur.chap;
-}
-function setPlay(on){
-  PLAY.on=!!on;PLAY.y=window.scrollY;
-  var b=document.getElementById('hPlay');if(b){b.classList.toggle('on',PLAY.on);b.setAttribute('aria-label',PLAY.on?'Pause the film':'Play the film')}
 }
 function goTo(ms,dur){var y=Math.max(0,(ms-INTRO)/1000*PPS);if(lenis)lenis.scrollTo(y,{duration:dur||1.6,easing:function(t){return t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2}});else window.scrollTo(0,y)}
 function beatAt(id){for(var i=0;i<BEATS.length;i++)if(BEATS[i].id===id)return BEATS[i];return null}
@@ -764,14 +756,14 @@ function jump(dir){
 }
 addEventListener('keydown',function(e){
   if(e.target&&(e.target.tagName==='BUTTON'||e.target.tagName==='INPUT'))return;
-  if(e.key==='ArrowRight'){e.preventDefault();setPlay(false);jump(1)}
-  else if(e.key==='ArrowLeft'){e.preventDefault();setPlay(false);jump(-1)}
+  if(e.key==='ArrowRight'){e.preventDefault();jump(1)}
+  else if(e.key==='ArrowLeft'){e.preventDefault();jump(-1)}
 });
 document.addEventListener('visibilitychange',function(){lastNow=0});
 
 var CHS=[];BEATS.forEach(function(b,k){if(k===0||b.chap!==BEATS[k-1].chap)CHS.push(b)});
 CHS.forEach(function(b){var u=document.createElement('u');u.style.left=(b.start/total*100).toFixed(3)+'%';$('#prog').appendChild(u)});
-$('#hTc').textContent='00:00:00 / '+tc(total);
+$('#hTc').textContent='00:00:00 / '+tc(RUNTIME);
 
 /* final state of a beat, used by the reduced-motion page */
 function beatFinal(b){
@@ -796,7 +788,7 @@ if(reduce){
   function setTrack(){var g=LIM&&!LIM.open;trackEl.style.height=(Math.round(((g?LIM.gate:total)-INTRO)/1000*PPS+innerHeight)+(g?1:0))+'px';if(!g&&lenis&&lenis.resize)lenis.resize()}
   if(LIM)LIM.setTrack=setTrack;
   setTrack();addEventListener('resize',setTrack);
-  if(window.Lenis){try{lenis=new Lenis({lerp:.085,wheelMultiplier:1,smoothWheel:true})}catch(e){lenis=null}}
+  if(window.Lenis){try{lenis=new Lenis({lerp:.075,wheelMultiplier:1,smoothWheel:true})}catch(e){lenis=null}}
   requestAnimationFrame(frame);
   Promise.race([(document.fonts&&document.fonts.ready)||Promise.resolve(),new Promise(function(r){setTimeout(r,1800)})]).then(function(){setTimeout(function(){READY=true;if(!HOLD)started=true},200)});
   window.__film={views:VIEWS,get T(){return T},seek:function(ms){started=true;introCur=INTRO;window.scrollTo(0,Math.max(0,(ms-INTRO)/1000*PPS))},snap:function(ms){started=true;introCur=INTRO;window.scrollTo(0,Math.max(0,(ms-INTRO)/1000*PPS));T=ms;lastT=ms;TV=0},total:total,PPS:PPS,INTRO:INTRO,starts:BEATS.map(function(s){return s.start}),beats:BEATS.map(function(b){return{id:b.id||'',chap:b.chap,start:b.start,dur:b.dur}}),agents:AGS};
